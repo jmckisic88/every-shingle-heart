@@ -1,3 +1,17 @@
+<script>
+  // Default to light theme unless the user has explicitly saved 'dark'
+  // or 'system' via the toggle. Runs before CSS applies to prevent flash.
+  (function() {
+    try {
+      var saved = localStorage.getItem('esh-theme');
+      if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      else if (saved === 'system') { /* no-op — respect OS preference */ }
+      else document.documentElement.setAttribute('data-theme', 'light');
+    } catch (_) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  })();
+</script>
 <title>Every Shingle Heart Foundation</title>
 <meta name="description" content="A national roofing foundation that partners with roofing companies to give free roof replacements and repairs to homeowners in need." />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -602,6 +616,106 @@
     color: var(--accent);
   }
 
+  /* Partners */
+  .partners-bg {
+    background: color-mix(in oklab, var(--warm) 5%, var(--ground));
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .partners-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  @media (max-width: 780px) {
+    .partners-grid { grid-template-columns: 1fr; }
+  }
+  .partner-card {
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.75rem;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 1.25rem;
+    align-items: start;
+    transition: transform 220ms cubic-bezier(.34,1.56,.64,1), box-shadow 220ms ease, border-color 220ms ease;
+    color: inherit;
+    text-decoration: none;
+  }
+  .partner-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--line-strong);
+  }
+  .partner-card--open {
+    background: transparent;
+    border-style: dashed;
+    border-color: var(--line-strong);
+  }
+  .partner-mark {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    background: var(--warm);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Cochin", "Big Caslon", "Palatino Linotype", Palatino, Georgia, serif;
+    font-weight: 700;
+    font-size: 1.9rem;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .partner-mark--open {
+    background: transparent;
+    border: 1.5px dashed var(--line-strong);
+    color: var(--ink-3);
+  }
+  .partner-mark--open svg { width: 32px; height: 32px; }
+  .partner-name {
+    font-family: "Cochin", "Big Caslon", "Palatino Linotype", Palatino, Georgia, serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: var(--ink);
+  }
+  .partner-region {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif;
+    font-size: 0.75rem;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 0.35rem;
+    font-weight: 600;
+  }
+  .partner-note {
+    color: var(--ink-2);
+    font-size: 0.94rem;
+    line-height: 1.6;
+    margin-top: 0.75rem;
+  }
+  .partner-note strong { color: var(--ink); font-weight: 600; }
+  .partner-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.85rem;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: gap 180ms ease, color 180ms ease;
+  }
+  .partner-link:hover {
+    gap: 0.65rem;
+    color: var(--warm);
+  }
+
   /* Vision */
   .vision {
     padding: clamp(3.5rem, 8vw, 6rem) 0;
@@ -1181,6 +1295,7 @@
     <nav class="nav" aria-label="Primary">
       <a href="#mission">Mission</a>
       <a href="#help">Ways to help</a>
+      <a href="#partners">Partners</a>
       <a href="#vision">Impact</a>
       <a href="#story">Story</a>
     </nav>
@@ -1347,6 +1462,46 @@
     </div>
   </div>
 </section>
+
+<!-- Our Partners -->
+<div class="partners-bg">
+  <section class="block" id="partners">
+    <div class="wrap">
+      <div class="section-head" style="text-align:center;margin-left:auto;margin-right:auto">
+        <span class="cap" style="align-self:center">Founding Partners</span>
+        <h2 class="section-title display" style="margin:0 auto">The roofers building this with us.</h2>
+        <p class="section-lede" style="margin:1rem auto 0">The Every Shingle Heart network launches with these partner roofing companies. Each has committed to donating labor and materials for at least one full roof per year. This is who they are.</p>
+      </div>
+      <div class="partners-grid">
+        <a href="https://www.happyroof.com" class="partner-card" target="_blank" rel="noopener">
+          <div class="partner-mark">
+            <span class="partner-mark-text">HR</span>
+          </div>
+          <div class="partner-body">
+            <div class="partner-name">Happy Roof</div>
+            <div class="partner-region">Tampa Bay, Florida · Founding partner</div>
+            <p class="partner-note">Josh McKisic and the Happy Roof crew launched the Foundation and donate <strong>$100 from every roof replacement</strong> back to the fund.</p>
+            <span class="partner-link">Visit happyroof.com <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+        <div class="partner-card partner-card--open">
+          <div class="partner-mark partner-mark--open" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </div>
+          <div class="partner-body">
+            <div class="partner-name">Your roofing company</div>
+            <div class="partner-region">Any metro · Open</div>
+            <p class="partner-note">Commit to one donated roof per year and become a named founding partner in your city, featured across every project you deliver.</p>
+            <a href="mailto:hello@everyshingleheart.com?subject=Interested%20in%20partnering%20with%20Every%20Shingle%20Heart" class="partner-link">Talk to us <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
 
 <!-- Founder -->
 <section class="block" id="story">
