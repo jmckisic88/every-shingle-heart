@@ -34,6 +34,25 @@ npx vercel
 
 Then add `everyshingleheart.com` and `www.everyshingleheart.com` as custom domains in the Vercel project settings, and update DNS at GoDaddy per Vercel's instructions.
 
+## Updating the fund progress bar
+
+The homepage has a live fund tracker (`$X raised toward $100,000 goal by 2026`).
+To update the raised amount, edit `index.html` and search for `FUND_RAISED`:
+
+```js
+var FUND_RAISED = 0;              // update this
+var FUND_GOAL = 100000;
+var LAST_UPDATED = '2026-07-29';  // display date; ISO YYYY-MM-DD
+```
+
+Change the three values, `git commit && git push`, Vercel auto-deploys. The
+bar animates from empty into the new percentage on first scroll into view.
+
+**Future automation**: swap the static `FUND_RAISED` for a `fetch()` call to
+Donorbox's public campaign totals (once you have a Donorbox campaign), or to
+a small JSON file you keep updated (`funds.json` in this repo, updated by a
+GitHub Action on Donorbox webhook). Either approach is a ~10-line change.
+
 ## Go-live checklist
 
 Items marked ⚠️ block public promotion of the domain.

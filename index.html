@@ -901,6 +901,144 @@
     color: var(--ink-3);
   }
 
+  /* Fund progress */
+  .fund-bg {
+    background: color-mix(in oklab, var(--wheat) 10%, var(--ground));
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .fund-inner { max-width: 820px; margin: 0 auto; }
+  .fund-head { text-align: center; margin-bottom: 2.5rem; }
+  .fund-head .section-title { margin: 0.75rem auto 1rem; }
+  .fund-head .section-lede { margin: 0 auto; }
+
+  .fund-card {
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .fund-card::before {
+    content: "";
+    position: absolute;
+    inset: -30% -20% auto auto;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle at 60% 40%, color-mix(in oklab, var(--warm) 22%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .fund-card > * { position: relative; z-index: 1; }
+
+  .fund-figures {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.5rem;
+    align-items: end;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 520px) {
+    .fund-figures { grid-template-columns: 1fr; gap: 1rem; text-align: center; }
+    .fund-divider { display: none; }
+  }
+  .fund-figure { min-width: 0; }
+  .fund-figure--goal { text-align: right; }
+  @media (max-width: 520px) {
+    .fund-figure--goal { text-align: center; }
+  }
+  .fund-amount {
+    font-family: "Cochin", "Big Caslon", "Palatino Linotype", Palatino, Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .fund-figure--goal .fund-amount { color: var(--ink-2); }
+  .fund-label {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-top: 0.5rem;
+  }
+  .fund-divider {
+    width: 1px;
+    align-self: stretch;
+    background: linear-gradient(180deg, transparent 0%, var(--line-strong) 25%, var(--line-strong) 75%, transparent 100%);
+    margin: 0 0.5rem;
+  }
+
+  .fund-bar-outer {
+    padding: 0.15rem 0 0.35rem;
+  }
+  .fund-bar {
+    position: relative;
+    height: 14px;
+    background: color-mix(in oklab, var(--ink) 8%, var(--surface));
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(27, 38, 33, 0.12);
+  }
+  .fund-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    background: linear-gradient(90deg, var(--warm) 0%, color-mix(in oklab, var(--wheat) 60%, var(--warm)) 100%);
+    border-radius: 999px;
+    transition: width 1200ms cubic-bezier(.2, .8, .2, 1);
+  }
+  .fund-bar-fill.is-empty {
+    width: 6px;
+    opacity: 0.4;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fund-bar-fill { transition: none; }
+  }
+
+  .fund-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-top: 0.85rem;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+  }
+  .fund-percent {
+    font-family: "Cochin", "Big Caslon", "Palatino Linotype", Palatino, Georgia, serif;
+    font-weight: 700;
+    color: var(--warm);
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .fund-updated {
+    color: var(--ink-3);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+  }
+
+  .fund-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  @media (max-width: 520px) {
+    .fund-actions .btn { flex: 1 1 100%; }
+  }
+
   /* Big donate CTA */
   .donate {
     padding: clamp(3.5rem, 8vw, 6rem) 0;
@@ -1533,6 +1671,51 @@
   </div>
 </section>
 
+<!-- Fund Progress -->
+<div class="fund-bg">
+  <section class="block" id="fund" aria-labelledby="fund-title">
+    <div class="wrap">
+      <div class="fund-inner">
+        <div class="fund-head">
+          <span class="cap">The Foundation Fund</span>
+          <h2 id="fund-title" class="section-title display">A community rebuilding roofs, dollar by dollar.</h2>
+          <p class="section-lede">100% of every gift goes to materials and labor on a specific family's roof. Overhead is covered by partner companies, so the fund is exactly what it says it is.</p>
+        </div>
+
+        <div class="fund-card">
+          <div class="fund-figures">
+            <div class="fund-figure">
+              <div class="fund-amount" data-fund-raised aria-live="polite">$0</div>
+              <div class="fund-label">raised so far</div>
+            </div>
+            <div class="fund-divider" aria-hidden="true"></div>
+            <div class="fund-figure fund-figure--goal">
+              <div class="fund-amount">$100,000</div>
+              <div class="fund-label">2026 goal</div>
+            </div>
+          </div>
+
+          <div class="fund-bar-outer">
+            <div class="fund-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100000" aria-label="Foundation fund progress">
+              <div class="fund-bar-fill" data-fund-fill></div>
+            </div>
+          </div>
+
+          <div class="fund-meta">
+            <span class="fund-percent" data-fund-percent>0% of goal</span>
+            <span class="fund-updated">Last updated <time datetime="2026-07-29">July 29, 2026</time></span>
+          </div>
+
+          <div class="fund-actions">
+            <a href="#donate" class="btn btn-primary">Add to the fund</a>
+            <a href="mailto:hello@everyshingleheart.com?subject=Corporate%20match%20or%20major%20gift" class="btn btn-ghost">Corporate match &amp; major gifts</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
 <!-- Donate CTA -->
 <section class="donate" id="donate">
   <div class="wrap donate-inner">
@@ -1699,6 +1882,56 @@
         else localStorage.setItem('esh-theme', next);
       } catch (_) {}
     });
+  })();
+
+  // Fund progress bar
+  //
+  // TO UPDATE THE RAISED AMOUNT: change FUND_RAISED below and redeploy.
+  // FUTURE: replace this static value with a fetch to Donorbox's public
+  //         campaign totals endpoint (or a small JSON file you keep updated).
+  //         Example wiring documented in the repo README.
+  (function() {
+    var FUND_RAISED = 0;              // update this
+    var FUND_GOAL = 100000;
+    var LAST_UPDATED = '2026-07-29';  // display date; ISO YYYY-MM-DD
+
+    function money(n) {
+      return '$' + Math.round(n).toLocaleString('en-US');
+    }
+
+    var amountEl = document.querySelector('[data-fund-raised]');
+    var fillEl = document.querySelector('[data-fund-fill]');
+    var percentEl = document.querySelector('[data-fund-percent]');
+    var bar = document.querySelector('.fund-bar[role="progressbar"]');
+    if (!amountEl || !fillEl || !percentEl || !bar) return;
+
+    amountEl.textContent = money(FUND_RAISED);
+    var pct = FUND_GOAL > 0 ? Math.min(100, (FUND_RAISED / FUND_GOAL) * 100) : 0;
+    var pctDisplay = pct < 1 && pct > 0 ? '<1%' : Math.round(pct) + '%';
+    percentEl.textContent = pctDisplay + ' of goal';
+    bar.setAttribute('aria-valuenow', String(FUND_RAISED));
+
+    if (FUND_RAISED === 0) {
+      fillEl.classList.add('is-empty');
+    } else {
+      // Animate fill in when the bar scrolls into view (or immediately if
+      // already visible / reduced motion).
+      var setWidth = function() { fillEl.style.width = pct + '%'; };
+      var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced || !('IntersectionObserver' in window)) {
+        setWidth();
+      } else {
+        var io = new IntersectionObserver(function(entries) {
+          entries.forEach(function(e) {
+            if (e.isIntersecting) {
+              setWidth();
+              io.disconnect();
+            }
+          });
+        }, { threshold: 0.25 });
+        io.observe(bar);
+      }
+    }
   })();
 
   // Donate custom-amount toggle
