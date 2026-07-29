@@ -1591,9 +1591,7 @@
 
     if (CAMPAIGN === 'DONORBOX_CAMPAIGN_ID') {
       alert('Preview draft — donation processor not yet connected.\n\n' +
-            'Type: ' + type + '\nAmount: 
-</script>
- + amount + (type === 'monthly' ? '/mo' : '') +
+            'Type: ' + type + '\nAmount: $' + amount + (type === 'monthly' ? '/mo' : '') +
             '\n\nOnce Donorbox is set up, this button will redirect to:\n' + url);
       return;
     }
