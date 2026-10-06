@@ -995,13 +995,80 @@
     background: linear-gradient(90deg, var(--warm) 0%, color-mix(in oklab, var(--wheat) 60%, var(--warm)) 100%);
     border-radius: 999px;
     transition: width 1200ms cubic-bezier(.2, .8, .2, 1);
+    z-index: 2;
   }
   .fund-bar-fill.is-empty {
     width: 6px;
     opacity: 0.4;
   }
+  /* Pledged segment: dollars under signed-pending contracts, sitting between
+     raised and the empty remainder. Diagonal-stripe fill signals "coming in,
+     not yet in the fund". */
+  .fund-bar-pledged {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background-color: color-mix(in oklab, var(--warm) 22%, var(--surface));
+    background-image: repeating-linear-gradient(
+      45deg,
+      color-mix(in oklab, var(--warm) 55%, transparent) 0,
+      color-mix(in oklab, var(--warm) 55%, transparent) 6px,
+      transparent 6px,
+      transparent 12px
+    );
+    border-radius: 999px;
+    transition: width 1200ms cubic-bezier(.2, .8, .2, 1) 200ms, left 1200ms cubic-bezier(.2, .8, .2, 1) 200ms;
+    z-index: 1;
+  }
   @media (prefers-reduced-motion: reduce) {
-    .fund-bar-fill { transition: none; }
+    .fund-bar-fill, .fund-bar-pledged { transition: none; }
+  }
+  .fund-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    margin-top: 0.85rem;
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    letter-spacing: 0.02em;
+  }
+  .fund-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .fund-legend-swatch {
+    width: 14px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .fund-legend-swatch--raised {
+    background: linear-gradient(90deg, var(--warm) 0%, color-mix(in oklab, var(--wheat) 60%, var(--warm)) 100%);
+  }
+  .fund-legend-swatch--pledged {
+    background-color: color-mix(in oklab, var(--warm) 22%, var(--surface));
+    background-image: repeating-linear-gradient(
+      45deg,
+      color-mix(in oklab, var(--warm) 55%, transparent) 0,
+      color-mix(in oklab, var(--warm) 55%, transparent) 3px,
+      transparent 3px,
+      transparent 6px
+    );
+  }
+  .fund-legend-swatch--remaining {
+    background: color-mix(in oklab, var(--ink) 8%, var(--surface));
+    box-shadow: inset 0 1px 2px rgba(27, 38, 33, 0.12);
+  }
+  .fund-amount-sub {
+    font-family: "Cochin", "Big Caslon", "Palatino Linotype", Palatino, Georgia, serif;
+    font-size: 0.82rem;
+    color: var(--ink-3);
+    margin-top: 0.2rem;
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
   }
 
   .fund-meta {
@@ -1687,6 +1754,7 @@
             <div class="fund-figure">
               <div class="fund-amount" data-fund-raised aria-live="polite">$0</div>
               <div class="fund-label">raised so far</div>
+              <div class="fund-amount-sub" data-fund-pledged-sub hidden></div>
             </div>
             <div class="fund-divider" aria-hidden="true"></div>
             <div class="fund-figure fund-figure--goal">
@@ -1697,13 +1765,20 @@
 
           <div class="fund-bar-outer">
             <div class="fund-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100000" aria-label="Foundation fund progress">
+              <div class="fund-bar-pledged" data-fund-pledged></div>
               <div class="fund-bar-fill" data-fund-fill></div>
             </div>
           </div>
 
           <div class="fund-meta">
             <span class="fund-percent" data-fund-percent>0% of goal</span>
-            <span class="fund-updated">Last updated <time datetime="2026-07-29">July 29, 2026</time></span>
+            <span class="fund-updated">Last updated <time datetime="2026-07-29" data-fund-updated>July 29, 2026</time></span>
+          </div>
+
+          <div class="fund-legend" aria-hidden="true">
+            <span class="fund-legend-item"><span class="fund-legend-swatch fund-legend-swatch--raised"></span>Raised</span>
+            <span class="fund-legend-item"><span class="fund-legend-swatch fund-legend-swatch--pledged"></span>Pledged (signed-pending)</span>
+            <span class="fund-legend-item"><span class="fund-legend-swatch fund-legend-swatch--remaining"></span>Remaining</span>
           </div>
 
           <div class="fund-actions">
@@ -1886,45 +1961,89 @@
 
   // Fund progress bar
   //
-  // TO UPDATE THE RAISED AMOUNT: change FUND_RAISED below and redeploy.
-  // FUTURE: replace this static value with a fetch to Donorbox's public
+  // TO UPDATE: change FUND_RAISED / FUND_PLEDGED / LAST_UPDATED below and
+  // redeploy. FUND_RAISED is dollars actually in the fund. FUND_PLEDGED is
+  // dollars committed on signed-pending contracts that haven't settled yet
+  // (shown as a diagonal-stripe segment next to the solid raised fill).
+  //
+  // FUTURE: replace these static values with a fetch to Donorbox's public
   //         campaign totals endpoint (or a small JSON file you keep updated).
   //         Example wiring documented in the repo README.
   (function() {
-    var FUND_RAISED = 0;              // update this
+    var FUND_RAISED = 1400;           // dollars actually in the fund
+    var FUND_PLEDGED = 2600;          // dollars pledged on signed-pending contracts
     var FUND_GOAL = 100000;
-    var LAST_UPDATED = '2026-07-29';  // display date; ISO YYYY-MM-DD
+    var LAST_UPDATED = '2026-10-06';  // display date; ISO YYYY-MM-DD
 
     function money(n) {
       return '$' + Math.round(n).toLocaleString('en-US');
     }
+    function formatUpdated(iso) {
+      try {
+        var d = new Date(iso + 'T12:00:00');
+        return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      } catch (_) { return iso; }
+    }
 
     var amountEl = document.querySelector('[data-fund-raised]');
+    var pledgedSubEl = document.querySelector('[data-fund-pledged-sub]');
     var fillEl = document.querySelector('[data-fund-fill]');
+    var pledgedBarEl = document.querySelector('[data-fund-pledged]');
     var percentEl = document.querySelector('[data-fund-percent]');
+    var updatedEl = document.querySelector('[data-fund-updated]');
     var bar = document.querySelector('.fund-bar[role="progressbar"]');
     if (!amountEl || !fillEl || !percentEl || !bar) return;
 
-    amountEl.textContent = money(FUND_RAISED);
-    var pct = FUND_GOAL > 0 ? Math.min(100, (FUND_RAISED / FUND_GOAL) * 100) : 0;
-    var pctDisplay = pct < 1 && pct > 0 ? '<1%' : Math.round(pct) + '%';
-    percentEl.textContent = pctDisplay + ' of goal';
-    bar.setAttribute('aria-valuenow', String(FUND_RAISED));
+    var raisedPct = FUND_GOAL > 0 ? Math.min(100, (FUND_RAISED / FUND_GOAL) * 100) : 0;
+    var pledgedCombinedPct = FUND_GOAL > 0 ? Math.min(100, ((FUND_RAISED + FUND_PLEDGED) / FUND_GOAL) * 100) : 0;
+    var pledgedWidthPct = Math.max(0, pledgedCombinedPct - raisedPct);
 
-    if (FUND_RAISED === 0) {
+    amountEl.textContent = money(FUND_RAISED);
+    if (pledgedSubEl) {
+      if (FUND_PLEDGED > 0) {
+        pledgedSubEl.textContent = '+ ' + money(FUND_PLEDGED) + ' pledged';
+        pledgedSubEl.hidden = false;
+      } else {
+        pledgedSubEl.hidden = true;
+      }
+    }
+
+    function fmtPct(p) { return p < 1 && p > 0 ? '<1%' : Math.round(p) + '%'; }
+    var percentText;
+    if (FUND_PLEDGED > 0) {
+      percentText = fmtPct(raisedPct) + ' raised · ' + fmtPct(pledgedCombinedPct) + ' with pledged';
+    } else {
+      percentText = fmtPct(raisedPct) + ' of goal';
+    }
+    percentEl.textContent = percentText;
+    bar.setAttribute('aria-valuenow', String(FUND_RAISED));
+    bar.setAttribute('aria-valuetext', money(FUND_RAISED) + ' raised of ' + money(FUND_GOAL) + ' goal' + (FUND_PLEDGED > 0 ? ', plus ' + money(FUND_PLEDGED) + ' pledged' : ''));
+    if (updatedEl) {
+      updatedEl.setAttribute('datetime', LAST_UPDATED);
+      updatedEl.textContent = formatUpdated(LAST_UPDATED);
+    }
+
+    var setWidths = function() {
+      if (FUND_RAISED > 0) {
+        fillEl.style.width = raisedPct + '%';
+      }
+      if (pledgedWidthPct > 0 && pledgedBarEl) {
+        pledgedBarEl.style.left = raisedPct + '%';
+        pledgedBarEl.style.width = pledgedWidthPct + '%';
+      }
+    };
+
+    if (FUND_RAISED === 0 && FUND_PLEDGED === 0) {
       fillEl.classList.add('is-empty');
     } else {
-      // Animate fill in when the bar scrolls into view (or immediately if
-      // already visible / reduced motion).
-      var setWidth = function() { fillEl.style.width = pct + '%'; };
       var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (prefersReduced || !('IntersectionObserver' in window)) {
-        setWidth();
+        setWidths();
       } else {
         var io = new IntersectionObserver(function(entries) {
           entries.forEach(function(e) {
             if (e.isIntersecting) {
-              setWidth();
+              setWidths();
               io.disconnect();
             }
           });
