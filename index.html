@@ -1362,6 +1362,85 @@
     line-height: 1.6;
   }
 
+  /* Donate: Stripe handoff states. '.donate .x' selectors beat '.donate p'. */
+  #donate { scroll-margin-top: 80px; }
+  .donate .donate-fees {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 44px;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--ink-2);
+    text-align: left;
+    cursor: pointer;
+  }
+  .donate .donate-fees input {
+    flex: none;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin: 0;
+    accent-color: var(--warm);
+    cursor: pointer;
+  }
+  /* Native checkbox: tokens can't theme it, so follow the page theme explicitly. */
+  :root[data-theme="dark"] .donate .donate-fees input { color-scheme: dark; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .donate .donate-fees input { color-scheme: dark; }
+  }
+  .donate .donate-fees:hover { color: var(--ink); }
+  .donate .donate-fees:has(input:focus-visible) {
+    outline: 2px solid var(--warm);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  .donate .donate-fees input:focus-visible { outline: none; }
+  .donate .donate-fees:active input { transform: scale(0.92); }
+  .donate .donate-status {
+    margin: -0.5rem 0 0;
+    max-width: none;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--ink);
+    text-align: left;
+  }
+  .donate .donate-status:empty { margin-top: -1.25rem; }
+  .donate .donate-status:not(:empty) {
+    padding-left: 0.75rem;
+    border-left: 3px solid var(--warm);
+  }
+  .donate .donate-disclosure {
+    margin-top: 1rem;
+    max-width: 42em;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+  .donate .donate-note a,
+  .donate .donate-disclosure a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-underline-offset: 0.18em;
+  }
+  .donate .donate-note a:hover,
+  .donate .donate-disclosure a:hover {
+    color: var(--warm);
+    text-decoration-color: currentColor;
+  }
+  .donate .donate-note a:active,
+  .donate .donate-disclosure a:active { opacity: 0.7; }
+  .donate .donate-cta:disabled,
+  .donate .donate-cta[aria-busy="true"] {
+    opacity: 0.7;
+    cursor: progress;
+    transform: none;
+  }
+  .donate .donate-custom-input input:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
   /* Footer */
   footer {
     background: var(--ink);
@@ -1577,7 +1656,7 @@
     </div>
     <div class="trust-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
-      <span><strong>100%</strong> of gifts go to materials + labor</span>
+      <span><strong>100%</strong> of gifts, after processing fees, go to materials + labor</span>
     </div>
     <div class="trust-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -1623,7 +1702,7 @@
         <article class="path-card">
           <div class="path-num">i. <small>Give</small></div>
           <h3 class="path-title">Donate to the fund.</h3>
-          <p class="path-desc">Every dollar goes to materials and labor for a specific family's roof. Operating costs are covered by partner companies, so <strong>100% of your gift lands on a rooftop.</strong> Any amount helps, and recurring monthly gifts fund more roofs, faster.</p>
+          <p class="path-desc">Every dollar, after payment processing fees, goes to materials and labor for a specific family's roof. Operating costs are covered by partner companies, so <strong>your gift lands on a rooftop.</strong> Any amount helps, and recurring monthly gifts fund more roofs, faster.</p>
           <a href="#donate" class="path-link">Give now <span class="arrow" aria-hidden="true">→</span></a>
         </article>
         <article class="path-card">
@@ -1746,7 +1825,7 @@
         <div class="fund-head">
           <span class="cap">The Foundation Fund</span>
           <h2 id="fund-title" class="section-title display">A community rebuilding roofs, dollar by dollar.</h2>
-          <p class="section-lede">100% of every gift goes to materials and labor on a specific family's roof. Overhead is covered by partner companies, so the fund is exactly what it says it is.</p>
+          <p class="section-lede">Every gift, after payment processing fees, goes to materials and labor on a specific family's roof. Overhead is covered by partner companies, so the fund is exactly what it says it is.</p>
         </div>
 
         <div class="fund-card">
@@ -1796,11 +1875,11 @@
   <div class="wrap donate-inner">
     <span class="cap" style="display:block">Give a family a roof</span>
     <h2 class="display" style="margin-top:0.75rem">A gift to <em>Every Shingle Heart</em> is the whole roof, not the paperwork.</h2>
-    <p>100% of your gift funds materials and labor for a specific family. Give monthly to sustain the fund, or make a one-time gift toward the next project.</p>
+    <p>Your gift, after payment processing fees, funds materials and labor for a specific family. Give monthly to sustain the fund, or make a one-time gift toward the next project.</p>
 
     <div class="donate-split">
       <!-- Monthly -->
-      <form class="donate-card donate-card--primary" data-donate-type="monthly" onsubmit="event.preventDefault(); donateHandoff(this);">
+      <form class="donate-card donate-card--primary" data-donate-type="monthly" novalidate onsubmit="event.preventDefault(); donateHandoff(this);">
         <div class="donate-card-head">
           <span class="donate-card-eyebrow">Sustain the fund</span>
           <h3 class="donate-card-title">Monthly gift</h3>
@@ -1822,16 +1901,21 @@
         </div>
         <div class="donate-custom-input" data-for="monthly">
           <span class="donate-custom-prefix">$</span>
-          <input type="number" min="1" step="1" placeholder="Amount" aria-label="Custom monthly amount">
+          <input type="number" min="5" max="1000" step="1" inputmode="numeric" placeholder="Amount" aria-label="Custom monthly amount" disabled>
           <span class="donate-custom-suffix">/mo</span>
         </div>
+        <label class="donate-fees">
+          <input type="checkbox" name="cover-fees">
+          <span data-fee-label>Add a little to help cover processing fees</span>
+        </label>
         <button type="submit" class="donate-cta donate-cta--primary">
           Start monthly gift <span aria-hidden="true">→</span>
         </button>
+        <p class="donate-status" aria-live="polite"></p>
       </form>
 
       <!-- One-time -->
-      <form class="donate-card" data-donate-type="onetime" onsubmit="event.preventDefault(); donateHandoff(this);">
+      <form class="donate-card" data-donate-type="onetime" novalidate onsubmit="event.preventDefault(); donateHandoff(this);">
         <div class="donate-card-head">
           <span class="donate-card-eyebrow">Fund a project</span>
           <h3 class="donate-card-title">One-time gift</h3>
@@ -1853,15 +1937,23 @@
         </div>
         <div class="donate-custom-input" data-for="onetime">
           <span class="donate-custom-prefix">$</span>
-          <input type="number" min="1" step="1" placeholder="Amount" aria-label="Custom one-time amount">
+          <input type="number" min="5" max="10000" step="1" inputmode="numeric" placeholder="Amount" aria-label="Custom one-time amount" disabled>
         </div>
+        <label class="donate-fees">
+          <input type="checkbox" name="cover-fees">
+          <span data-fee-label>Add a little to help cover processing fees</span>
+        </label>
         <button type="submit" class="donate-cta donate-cta--ghost">
           Give once <span aria-hidden="true">→</span>
         </button>
+        <p class="donate-status" aria-live="polite"></p>
       </form>
     </div>
 
-    <p class="donate-note">Donations are processed securely. Your gift is tax-deductible upon issuance of the Foundation's IRS 501(c)(3) determination letter (application in progress). A receipt is emailed for every donation.</p>
+    <!-- PLACEHOLDER: the IRS status sentence is default wording until the filing status is confirmed. -->
+    <p class="donate-note">Gifts are processed securely by Stripe, and Stripe emails a receipt for every gift. Every Shingle Heart Foundation has not yet received an IRS determination of 501(c)(3) status, so we can't yet confirm that gifts are tax-deductible. Please consult your tax advisor. Already give monthly? <a href="/api/donate?manage=1">Manage or cancel your gift.</a></p>
+    <!-- PLACEHOLDER: [City] is the principal office city and [pending] is the FDACS registration number. Replace both before go-live (same text in thank-you.html and api/donate.js). -->
+    <p class="donate-disclosure">Every Shingle Heart Foundation, [City], Florida. Florida registration no. [pending]. A COPY OF THE OFFICIAL REGISTRATION AND FINANCIAL INFORMATION MAY BE OBTAINED FROM THE DIVISION OF CONSUMER SERVICES BY CALLING TOLL-FREE WITHIN THE STATE. REGISTRATION DOES NOT IMPLY ENDORSEMENT, APPROVAL, OR RECOMMENDATION BY THE STATE. <a href="tel:+18004357352">1-800-HELP-FLA (435-7352)</a> &middot; <a href="https://www.fdacs.gov">FDACS.gov</a></p>
   </div>
 </section>
 
@@ -2053,55 +2145,178 @@
     }
   })();
 
-  // Donate custom-amount toggle
+  // Donate cards: custom amounts, fee estimates and the Stripe Checkout handoff.
+  // LIMITS and FEE_RATE mirror api/donate.js, which re-validates every request.
+  // Money is formatted with Intl.NumberFormat only, never concatenated from a
+  // currency-sign string literal (see commit 40cd703).
   (function() {
+    var LIMITS = { onetime: { min: 5, max: 10000 }, monthly: { min: 5, max: 1000 } };  // whole dollars
+    var FEE_RATE = { onetime: 0.033, monthly: 0.036 };
+    var FEE_FIXED_CENTS = 30;
+    var CONTACT = 'hello@everyshingleheart.com';
+    var BUSY_LABEL = 'Opening secure checkout…';
+    var REQUEST_TIMEOUT_MS = 20000;
+    var usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+    var usdWhole = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    var FAILED_MESSAGE = "We couldn't open checkout. Please try again, or email " + CONTACT + '.';
+    var PAUSED_MESSAGE = 'Online giving is paused right now. Please email ' + CONTACT + '.';
+
+    function rangeMessage(type) {
+      var lim = LIMITS[type];
+      return 'Please enter a whole-dollar amount from ' + usdWhole.format(lim.min) + ' to ' +
+        usdWhole.format(lim.max) + (type === 'monthly' ? ' a month.' : '.');
+    }
+
+    // Whole dollars within the card's bounds, or null.
+    function wholeDollars(value, type) {
+      var lim = LIMITS[type];
+      var text = value == null ? '' : String(value).trim();
+      if (!lim || !/^\d+$/.test(text)) return null;
+      var n = Number(text);
+      return n >= lim.min && n <= lim.max ? n : null;
+    }
+
+    // Same estimate as the server: ceil((gift + 30 cents) / (1 - rate)) - gift.
+    function feeCents(giftCents, type) {
+      return Math.ceil((giftCents + FEE_FIXED_CENTS) / (1 - FEE_RATE[type])) - giftCents;
+    }
+
+    function selectedAmount(form) {
+      var checked = form.querySelector('input[type="radio"]:checked');
+      if (!checked) return null;
+      if (checked.value !== 'custom') return checked.value;
+      var custom = form.querySelector('.donate-custom-input input');
+      return custom ? custom.value : null;
+    }
+
+    function refreshFee(form) {
+      var label = form.querySelector('[data-fee-label]');
+      if (!label) return;
+      var type = form.getAttribute('data-donate-type');
+      var dollars = wholeDollars(selectedAmount(form), type);
+      label.textContent = dollars === null
+        ? 'Add a little to help cover processing fees'
+        : 'Add ' + usd.format(feeCents(dollars * 100, type) / 100) + (type === 'monthly' ? ' a month' : '') + ' to help cover processing fees';
+    }
+
+    function setStatus(form, message) {
+      var el = form.querySelector('.donate-status');
+      if (el) el.textContent = message;
+    }
+
+    function setBusy(button, busy) {
+      if (busy) {
+        if (button.getAttribute('aria-busy') !== 'true') button.eshLabel = button.innerHTML;
+        button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
+        button.textContent = BUSY_LABEL;
+      } else {
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
+        if (button.eshLabel) button.innerHTML = button.eshLabel;
+      }
+    }
+
     var forms = document.querySelectorAll('.donate-card');
+
+    // Custom-amount toggle. The number input is disabled (and not required)
+    // whenever a preset is picked, so a stale invalid value can't block submit.
     forms.forEach(function(form) {
       var customInput = form.querySelector('.donate-custom-input');
+      var num = customInput ? customInput.querySelector('input') : null;
       var radios = form.querySelectorAll('input[type="radio"]');
+      function sync(focus) {
+        var checked = form.querySelector('input[type="radio"]:checked');
+        var isCustom = !!checked && checked.value === 'custom';
+        if (customInput) customInput.classList.toggle('show', isCustom);
+        if (num) {
+          num.disabled = !isCustom;
+          num.required = isCustom;
+          if (isCustom && focus) setTimeout(function() { num.focus(); }, 10);
+        }
+        refreshFee(form);
+      }
       radios.forEach(function(r) {
         r.addEventListener('change', function() {
-          if (r.checked && r.value === 'custom') {
-            customInput.classList.add('show');
-            var num = customInput.querySelector('input');
-            if (num) setTimeout(function() { num.focus(); }, 10);
-          } else if (r.checked) {
-            customInput.classList.remove('show');
-          }
+          if (!r.checked) return;
+          setStatus(form, '');
+          sync(true);
         });
+      });
+      if (num) {
+        num.addEventListener('input', function() { setStatus(form, ''); refreshFee(form); });
+        num.addEventListener('change', function() { refreshFee(form); });
+      }
+      sync(false);
+    });
+
+    // Called from each form's inline onsubmit, so it must stay global.
+    window.donateHandoff = function(form) {
+      var type = form.getAttribute('data-donate-type');
+      var checked = form.querySelector('input[type="radio"]:checked');
+      var amount = checked ? checked.value : null;
+      var custom = form.querySelector('.donate-custom-input input');
+      if (amount === 'custom') {
+        amount = custom && custom.value ? custom.value : null;
+      }
+      var button = form.querySelector('button[type="submit"]');
+      if (!button || button.disabled) return;
+
+      var dollars = wholeDollars(amount, type);
+      if (dollars === null) {
+        setStatus(form, LIMITS[type] ? rangeMessage(type) : FAILED_MESSAGE);
+        if (checked && checked.value === 'custom' && custom) custom.focus();
+        return;
+      }
+
+      var cover = form.querySelector('input[name="cover-fees"]');
+      setStatus(form, '');
+      setBusy(button, true);
+
+      function fail(status, data) {
+        setBusy(button, false);
+        var message = FAILED_MESSAGE;
+        if (status === 503) message = PAUSED_MESSAGE;
+        else if (status === 400 && data && data.error === 'amount_out_of_range') message = rangeMessage(type);
+        setStatus(form, message);
+        button.focus();
+      }
+
+      var controller = typeof AbortController === 'function' ? new AbortController() : null;
+      var timer = controller ? setTimeout(function() { controller.abort(); }, REQUEST_TIMEOUT_MS) : 0;
+
+      fetch('/api/donate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ frequency: type, amount: dollars, coverFees: !!(cover && cover.checked) }),
+        signal: controller ? controller.signal : undefined
+      }).then(function(res) {
+        return res.json().catch(function() { return null; }).then(function(data) {
+          clearTimeout(timer);
+          var url = data && data.url;
+          if (res.ok && typeof url === 'string' && /^https:\/\//.test(url)) {
+            // Leave the button disabled while the browser leaves for Stripe.
+            window.location.assign(url);
+            return;
+          }
+          fail(res.status, data);
+        });
+      }).catch(function() {
+        clearTimeout(timer);
+        fail(0, null);
+      });
+    };
+
+    // A donor who comes Back from Stripe gets this page from the back/forward
+    // cache with the button still busy, so reset it.
+    window.addEventListener('pageshow', function(event) {
+      if (!event.persisted) return;
+      forms.forEach(function(form) {
+        var button = form.querySelector('button[type="submit"]');
+        if (button && button.getAttribute('aria-busy') === 'true') setBusy(button, false);
+        setStatus(form, '');
       });
     });
   })();
-
-  // Donate form handoff (placeholder — real integration wires to Stripe / Donorbox / etc.)
-  window.donateHandoff = function(form) {
-    var type = form.getAttribute('data-donate-type');
-    var checked = form.querySelector('input[type="radio"]:checked');
-    var amount = checked ? checked.value : null;
-    if (amount === 'custom') {
-      var custom = form.querySelector('.donate-custom-input input');
-      amount = custom && custom.value ? custom.value : null;
-      if (!amount) { custom && custom.focus(); return; }
-    }
-    if (!amount) return;
-
-    // === DONATION PROCESSOR ==================================================
-    // Once you sign up for Donorbox (or another processor), replace
-    // DONORBOX_CAMPAIGN_ID with your real campaign slug. Donorbox accepts
-    // ?amount= and ?recurring=true params directly in the URL, so this
-    // just redirects with the user's selection prefilled.
-    // Docs: https://donorbox.org/nonprofit-blog/prefill-donation-form
-    // =========================================================================
-    var CAMPAIGN = 'DONORBOX_CAMPAIGN_ID';
-    var recurring = (type === 'monthly') ? '&recurring=true' : '';
-    var url = 'https://donorbox.org/' + CAMPAIGN + '?amount=' + encodeURIComponent(amount) + recurring;
-
-    if (CAMPAIGN === 'DONORBOX_CAMPAIGN_ID') {
-      alert('Preview draft — donation processor not yet connected.\n\n' +
-            'Type: ' + type + '\nAmount: $' + amount + (type === 'monthly' ? '/mo' : '') +
-            '\n\nOnce Donorbox is set up, this button will redirect to:\n' + url);
-      return;
-    }
-    window.location.href = url;
-  };
 </script>
