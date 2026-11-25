@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Thank you | Every Shingle Heart</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<script>
+  // Same pre-paint theme logic as index.html: light unless the visitor saved 'dark'.
+  (function() {
+    try {
+      var saved = localStorage.getItem('esh-theme');
+      if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      else if (saved === 'system') { /* no-op: respect OS preference */ }
+      else document.documentElement.setAttribute('data-theme', 'light');
+    } catch (_) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  })();
+</script>
+<style>
+  :root {
+    --ground: #FBF8F1;
+    --surface: #F3ECDA;
+    --ink: #1B2621;
+    --ink-2: #3F4844;
+    --ink-3: #6E7570;
+    --line: rgba(35, 64, 55, 0.14);
+    --line-strong: rgba(35, 64, 55, 0.28);
+    --warm: #C25E31;
+    --wheat: #E9B96E;
+    --shadow-sm: 0 1px 2px rgba(27, 38, 33, 0.06), 0 2px 6px rgba(194, 94, 49, 0.04);
+    --shadow-md: 0 2px 4px rgba(27, 38, 33, 0.08), 0 12px 32px -8px rgba(35, 64, 55, 0.14);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #141C18;
+      --surface: #1B2621;
+      --ink: #F6EFE3;
+      --ink-2: #C7BFAE;
+      --ink-3: #8F8877;
+      --line: rgba(220, 199, 168, 0.14);
+      --line-strong: rgba(220, 199, 168, 0.28);
+      --warm: #E67450;
+      --wheat: #F0C982;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(230, 116, 80, 0.08);
+      --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #141C18;
+    --surface: #1B2621;
+    --ink: #F6EFE3;
+    --ink-2: #C7BFAE;
+    --ink-3: #8F8877;
+    --line: rgba(220, 199, 168, 0.14);
+    --line-strong: rgba(220, 199, 168, 0.28);
+    --warm: #E67450;
+    --wheat: #F0C982;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(230, 116, 80, 0.08);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--ink);
+    background: var(--ground);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  p { margin: 0; }
+
+  a { color: inherit; }
+
+  :focus-visible {
+    outline: 2px solid var(--warm);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  .ty {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    padding: clamp(1.5rem, 5vw, 3rem) 0 clamp(2.5rem, 7vw, 4.5rem);
+  }
+  .ty::before {
+    content: "";
+    position: absolute;
+    inset: -20% -20% auto;
+    height: 90%;
+    background:
+      radial-gradient(45% 55% at 50% 10%, color-mix(in oklab, var(--warm) 20%, transparent) 0%, transparent 65%),
+      radial-gradient(35% 40% at 80% 30%, color-mix(in oklab, var(--wheat) 16%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .ty-inner {
+    position: relative;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+  }
+
+  .ty-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 44px;
+    margin-bottom: clamp(1.5rem, 5vw, 2.5rem);
+    font-family: "Cochin", "Big Caslon", "Palatino Linotype", Palatino, Georgia, serif;
+    font-weight: 700;
+    font-size: 1.02rem;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-decoration: none;
+    transition: transform 180ms cubic-bezier(.34,1.56,.64,1), opacity 180ms ease;
+  }
+  .ty-brand svg { width: 30px; height: 30px; color: var(--warm); flex-shrink: 0; }
+  .ty-brand:hover { transform: translateY(-1px); }
+  .ty-brand:active { transform: translateY(0); opacity: 0.7; }
+
+  .ty-card {
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: clamp(1.5rem, 5vw, 2.75rem);
+    box-shadow: var(--shadow-md);
+  }
+
+  .ty-test {
+    display: inline-block;
+    margin-bottom: 1.25rem;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+    color: var(--ink);
+    background: color-mix(in oklab, var(--warm) 12%, var(--ground));
+    border: 1px solid color-mix(in oklab, var(--warm) 35%, var(--line));
+    border-radius: 999px;
+  }
+
+  .ty-title {
+    margin: 0;
+    font-family: "Cochin", "Big Caslon", "Palatino Linotype", Palatino, Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(2.2rem, 7vw, 3.2rem);
+    line-height: 1.03;
+    letter-spacing: -0.022em;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .ty-lede {
+    margin-top: 1rem;
+    min-height: 1.65em;
+    font-size: 1.12rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+  .ty-fee {
+    margin-top: 0.6rem;
+    font-size: 0.95rem;
+    color: var(--ink-2);
+  }
+
+  .ty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+  .ty-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0.8rem 1.4rem;
+    border-radius: 999px;
+    border: 1.5px solid transparent;
+    font-family: inherit;
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    text-wrap: balance;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 180ms cubic-bezier(.34,1.56,.64,1), opacity 180ms ease;
+  }
+  @media (max-width: 520px) {
+    .ty-btn { flex: 1 1 100%; }
+  }
+  .ty-btn:hover { transform: translateY(-2px); }
+  .ty-btn:active { transform: translateY(0) scale(0.98); opacity: 0.85; }
+  .ty-btn--solid {
+    background: var(--ink);
+    color: var(--ground);
+    box-shadow: var(--shadow-sm);
+  }
+  .ty-btn--ghost {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--line-strong);
+  }
+  .ty-btn--ghost:hover { border-color: var(--ink); }
+
+  .ty-fine {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    display: grid;
+    gap: 0.75rem;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+  .ty-disclosure {
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+  }
+  .ty-fine a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-underline-offset: 0.18em;
+  }
+  .ty-fine a:hover { text-decoration-color: currentColor; }
+  .ty-fine a:active { opacity: 0.7; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+    .ty-btn:hover, .ty-btn:active, .ty-brand:hover, .ty-brand:active { transform: none; }
+  }
+</style>
+</head>
+<body>
+<main class="ty">
+  <div class="ty-inner">
+    <a class="ty-brand" href="/" aria-label="Every Shingle Heart Foundation home">
+      <svg viewBox="0 0 64 60" aria-hidden="true">
+        <defs>
+          <pattern id="tyShingleCourse" x="0" y="0" width="14" height="8" patternUnits="userSpaceOnUse">
+            <path d="M0 8 Q 3.5 4, 7 8 T 14 8" stroke="var(--ground)" fill="none" stroke-width="0.8" opacity="0.5"/>
+          </pattern>
+        </defs>
+        <path d="M32 54 C 16 44, 4 32, 6 20 C 6 12, 12 6, 20 6 C 26 6, 30 10, 32 15 L 32 15 C 34 10, 38 6, 44 6 C 52 6, 58 12, 58 20 C 60 32, 48 44, 32 54 Z" fill="currentColor"/>
+        <path d="M32 54 C 16 44, 4 32, 6 20 C 6 12, 12 6, 20 6 C 26 6, 30 10, 32 15 L 32 15 C 34 10, 38 6, 44 6 C 52 6, 58 12, 58 20 C 60 32, 48 44, 32 54 Z" fill="url(#tyShingleCourse)"/>
+      </svg>
+      <span>Every Shingle Heart</span>
+    </a>
+
+    <section class="ty-card" aria-labelledby="ty-title">
+      <p class="ty-test" data-ty-test hidden>Test mode: no real money moved.</p>
+      <h1 class="ty-title" id="ty-title" data-ty-title>Thank you.</h1>
+      <p class="ty-lede" data-ty-lede aria-live="polite"></p>
+      <p class="ty-fee" data-ty-fee hidden></p>
+
+      <div class="ty-actions">
+        <a class="ty-btn ty-btn--ghost" data-ty-manage href="/api/donate?manage=1" hidden>Manage or cancel your monthly gift</a>
+        <a class="ty-btn ty-btn--solid" href="/">Back to Every Shingle Heart</a>
+      </div>
+
+      <div class="ty-fine">
+        <p>Stripe emails a receipt for every gift to the address you entered.</p>
+        <!-- PLACEHOLDER: the IRS status sentence is default wording until the filing status is confirmed. -->
+        <p>Every Shingle Heart Foundation has not yet received an IRS determination of 501(c)(3) status, so we can't yet confirm that gifts are tax-deductible. Please consult your tax advisor.</p>
+        <!-- PLACEHOLDER: [City] is the principal office city and [pending] is the FDACS registration number. Replace both before go-live (same text in index.html and api/donate.js). -->
+        <p class="ty-disclosure">Every Shingle Heart Foundation, [City], Florida. Florida registration no. [pending]. A COPY OF THE OFFICIAL REGISTRATION AND FINANCIAL INFORMATION MAY BE OBTAINED FROM THE DIVISION OF CONSUMER SERVICES BY CALLING TOLL-FREE WITHIN THE STATE. REGISTRATION DOES NOT IMPLY ENDORSEMENT, APPROVAL, OR RECOMMENDATION BY THE STATE. <a href="tel:+18004357352">1-800-HELP-FLA (435-7352)</a> &middot; <a href="https://www.fdacs.gov">FDACS.gov</a></p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+  // Reads the Checkout Session summary from /api/donate and fills in the
+  // confirmation. Values are written with textContent; money uses Intl.NumberFormat.
+  (function() {
+    var SESSION_ID = /^cs_(test|live)_[A-Za-z0-9]{10,}$/;
+    var title = document.querySelector('[data-ty-title]');
+    var lede = document.querySelector('[data-ty-lede]');
+    var fee = document.querySelector('[data-ty-fee]');
+    var test = document.querySelector('[data-ty-test]');
+    var manage = document.querySelector('[data-ty-manage]');
+
+    var id = '';
+    try { id = new URLSearchParams(window.location.search).get('session_id') || ''; } catch (_) {}
+    var valid = SESSION_ID.test(id);
+    if (valid && id.indexOf('cs_test_') === 0) test.hidden = false;
+
+    function fallback() {
+      title.textContent = 'Thank you for supporting Every Shingle Heart.';
+      lede.textContent = '';
+      lede.hidden = true;
+      fee.hidden = true;
+      manage.hidden = true;
+    }
+
+    function isCents(n) { return typeof n === 'number' && Number.isInteger(n) && n >= 0; }
+
+    function render(data) {
+      if (!data || data.status !== 'complete') return fallback();
+      var currency = typeof data.currency === 'string' && /^[a-z]{3}$/i.test(data.currency) ? data.currency.toUpperCase() : 'USD';
+      var fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: currency });
+      function money(cents) { return fmt.format(cents / 100); }
+      var monthly = data.frequency === 'monthly';
+
+      if (data.paymentStatus === 'paid') {
+        var total = isCents(data.amountTotal) ? data.amountTotal : null;
+        if (total === null) return fallback();
+        title.textContent = 'Thank you.';
+        lede.textContent = monthly
+          ? 'Your ' + money(total) + ' monthly gift is set up, starting today.'
+          : 'Your gift of ' + money(total) + ' to Every Shingle Heart is complete.';
+        if (isCents(data.feeCents) && data.feeCents > 0) {
+          fee.textContent = 'Includes ' + money(data.feeCents) + ' you added to cover processing fees.';
+          fee.hidden = false;
+        }
+        if (monthly && typeof data.portalUrl === 'string' && /^https:\/\//.test(data.portalUrl)) {
+          manage.href = data.portalUrl;
+          manage.hidden = false;
+        }
+        return;
+      }
+      if (data.paymentStatus === 'unpaid') {
+        title.textContent = 'Thank you.';
+        lede.textContent = 'Your bank payment is processing. Bank payments usually clear within 4 business days, and Stripe emails your receipt when it does.';
+        return;
+      }
+      fallback();
+    }
+
+    if (!valid) return fallback();
+
+    fetch('/api/donate?session_id=' + encodeURIComponent(id), {
+      headers: { 'Accept': 'application/json' },
+      cache: 'no-store',
+      credentials: 'same-origin'
+    }).then(function(res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    }).then(render).catch(fallback);
+  })();
+</script>
+</body>
+</html>
