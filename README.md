@@ -52,6 +52,7 @@ There is no webhook yet. Add one only when something needs it (branded receipts,
 
 - Whole dollars only: $5 to $1,000 a month, $5 to $10,000 one-time. The server re-checks every request. Larger gifts go through the "Corporate match & major gifts" email.
 - "Cover processing fees" is unchecked by default. The estimate is `ceil((gift + 30 cents) / (1 - rate)) - gift`, with a rate of 3.3% for one-time gifts and 3.6% for monthly gifts. The function adds it as a separate "Added to cover processing fees" line, so Checkout and receipts show it apart from the gift.
+- Card verification: when the total charged (gift plus any fee cover) is $500 or more, Checkout asks the donor's bank to authenticate the card with 3D Secure (`request_three_d_secure: 'any'`, set by `VERIFY_CARD_FROM_CENTS` in `api/donate.js`). The bank either approves it silently or asks the donor to confirm, and an authenticated payment that later proves fraudulent is charged back to the card issuer, not the foundation. For monthly gifts it covers the first charge. Bank (ACH) payments are unaffected. Below $500, Stripe's default rules decide.
 - The function needs three Products in the Stripe account: `esh_gift_once`, `esh_gift_monthly` and `esh_fee_cover`. `scripts/stripe-setup.mjs` creates them and is safe to re-run.
 
 ### Environment variables
@@ -92,7 +93,8 @@ Any future expiry, any CVC, any name, US ZIP such as 33602.
 | Card | Result |
 | --- | --- |
 | 4242 4242 4242 4242 | succeeds |
-| 4000 0025 0000 3155 | succeeds after 3D Secure |
+| 4000 0025 0000 3155 | succeeds after 3D Secure (always asks) |
+| 4000 0000 0000 3055 | goes straight through under $500; asks for 3D Secure at $500 or more (shows the card-verification rule working) |
 | 4000 0000 0000 9995 | declined (insufficient funds) |
 | 4000 0000 0000 0002 | declined (generic) |
 | 4100 0000 0000 0019 | blocked by Radar |

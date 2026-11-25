@@ -23,6 +23,12 @@ import Stripe from 'stripe';
 const LIMITS = { onetime: { min: 5, max: 10000 }, monthly: { min: 5, max: 1000 } }; // whole dollars
 const PRODUCTS = { onetime: 'esh_gift_once', monthly: 'esh_gift_monthly', fees: 'esh_fee_cover' };
 const FEE = { onetime: 0.033, monthly: 0.036, fixedCents: 30 };
+// Card charges at or above this total (gift plus any fee cover) ask the donor's
+// bank to authenticate the card with 3D Secure. The bank may approve silently or
+// ask the donor to confirm; once authenticated, a fraud chargeback falls on the
+// card issuer instead of the foundation. For monthly gifts this covers the first
+// charge; later charges reuse that authentication. Bank (ACH) payments are unaffected.
+const VERIFY_CARD_FROM_CENTS = 50000;
 const MAX_BODY_BYTES = 1024;
 const SOURCE = 'everyshingleheart.com';
 const SESSION_ID = /^cs_(test|live)_[A-Za-z0-9]{10,}$/;
@@ -142,6 +148,9 @@ function checkoutParams({ frequency, giftCents, feeCents, origin }) {
     success_url: origin + '/thank-you.html?session_id={CHECKOUT_SESSION_ID}',
     cancel_url: origin + '/#donate',
   };
+  if (giftCents + feeCents >= VERIFY_CARD_FROM_CENTS) {
+    common.payment_method_options = { card: { request_three_d_secure: 'any' } };
+  }
 
   if (!monthly) {
     return {
@@ -224,7 +233,13 @@ export async function POST(request) {
     const session = await stripe.checkout.sessions.create(
       checkoutParams({ frequency, giftCents, feeCents, origin }),
     );
-    log('log', 'checkout_session_created', { session: session.id, frequency, giftCents, feeCents });
+    log('log', 'checkout_session_created', {
+      session: session.id,
+      frequency,
+      giftCents,
+      feeCents,
+      verifyCard: giftCents + feeCents >= VERIFY_CARD_FROM_CENTS,
+    });
     return json(200, { url: session.url });
   } catch (err) {
     log('error', 'checkout_session_failed', {
