@@ -63,7 +63,9 @@ There is no webhook yet. Add one only when something needs it (branded receipts,
 
 `VERCEL_ENV` comes from Vercel. The function only accepts a live key in Production and only a test key everywhere else. A missing or mismatched key returns 503, and the page shows "Online giving is paused right now."
 
-Keys never go in the repo (it is public). `.env*` is git-ignored. Before every push:
+Checkout only returns donors to the site's own origins, which the function builds from server config, never from request headers: `https://www.everyshingleheart.com` and `https://everyshingleheart.com` in Production, the preview's own URLs (`VERCEL_BRANCH_URL` and `VERCEL_URL`, set by Vercel) on previews, and `http://localhost` or `127.0.0.1` locally. A request from any other origin gets 403. If the site moves to a new domain, update `SITE_ORIGINS` in `api/donate.js`.
+
+Keys never go in the repo (it is public). `.env*` is git-ignored, and `.vercelignore` keeps env files out of `vercel deploy` uploads (the CLI doesn't read `.gitignore`). Before every push:
 
 ```bash
 git grep -nE 'sk_(test|live)_|rk_(test|live)_|whsec[_]'   # must print nothing

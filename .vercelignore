@@ -1,0 +1,2 @@
+# The Vercel CLI reads this file, not .gitignore: keep env files out of `vercel deploy` uploads.
+.env*

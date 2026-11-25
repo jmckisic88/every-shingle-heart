@@ -9,6 +9,10 @@
 //                            except production, which only accepts a live-mode key.
 //   STRIPE_PORTAL_LOGIN_URL  optional. Hosted customer portal login link for monthly donors.
 //   VERCEL_ENV               set by Vercel ('production', 'preview' or 'development').
+//   VERCEL_BRANCH_URL, VERCEL_URL
+//                            set by Vercel. On previews these are the only origins
+//                            Checkout returns donors to; production allows only the
+//                            www and apex site origins (SITE_ORIGINS).
 //
 // Every Stripe parameter is built here. The only client input used is frequency,
 // a whole-dollar amount and the cover-fees flag; everything else in the body is ignored.
@@ -22,6 +26,8 @@ const FEE = { onetime: 0.033, monthly: 0.036, fixedCents: 30 };
 const MAX_BODY_BYTES = 1024;
 const SOURCE = 'everyshingleheart.com';
 const SESSION_ID = /^cs_(test|live)_[A-Za-z0-9]{10,}$/;
+const SITE_ORIGINS = ['https://www.everyshingleheart.com', 'https://everyshingleheart.com'];
+const LOCAL_HOSTNAMES = ['localhost', '127.0.0.1', '[::1]'];
 
 // PLACEHOLDER: [City] (principal office city) and [pending] (FDACS registration
 // number) must be replaced before go-live, together with the same text in
@@ -59,8 +65,24 @@ function stripeKey() {
   return key;
 }
 
-// Returns the request's Origin when its host matches the host that served the
-// request, so previews, the apex domain and www each send donors back to themselves.
+// The origins Checkout may send donors back to come from server config, never
+// from forwarding headers such as X-Forwarded-Host, which a client can forge.
+// Production: the two site origins. Previews: the deployment's own branch and
+// deployment URLs. Locally (vercel dev or plain node): http on localhost only.
+function allowedOrigin(parsed) {
+  const env = process.env.VERCEL_ENV;
+  if (env === 'production') return SITE_ORIGINS.includes(parsed.origin);
+  if (env === 'preview') {
+    return [process.env.VERCEL_BRANCH_URL, process.env.VERCEL_URL].some(
+      (host) => !!host && parsed.origin === 'https://' + host.toLowerCase(),
+    );
+  }
+  return parsed.protocol === 'http:' && LOCAL_HOSTNAMES.includes(parsed.hostname);
+}
+
+// Returns the request's Origin when it is one of this deployment's own origins
+// and matches the Host the request was sent to, so previews, the apex domain
+// and www each send donors back to themselves.
 function sameOrigin(request) {
   const origin = request.headers.get('origin');
   if (!origin) return null;
@@ -70,12 +92,8 @@ function sameOrigin(request) {
   } catch {
     return null;
   }
-  if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
-  const host = (request.headers.get('x-forwarded-host') || request.headers.get('host') || '')
-    .split(',')[0]
-    .trim()
-    .toLowerCase();
-  return host && parsed.host.toLowerCase() === host ? parsed.origin : null;
+  const host = (request.headers.get('host') || '').trim().toLowerCase();
+  return host && parsed.host === host && allowedOrigin(parsed) ? parsed.origin : null;
 }
 
 // Reads at most MAX_BODY_BYTES; returns null when the body is larger.
@@ -159,7 +177,7 @@ export async function POST(request) {
   const key = stripeKey();
   if (!key) return json(503, { error: 'unavailable' });
 
-  // 3. Same-origin browser request.
+  // 3. Same-origin request from one of this deployment's own origins.
   const origin = sameOrigin(request);
   if (!origin) return json(403, { error: 'forbidden' });
 
