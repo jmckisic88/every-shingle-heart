@@ -1,2 +1,4 @@
 # The Vercel CLI reads this file, not .gitignore: keep env files out of `vercel deploy` uploads.
 .env*
+# Local-only tooling (Stripe product setup); never part of the site.
+/scripts
