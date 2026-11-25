@@ -474,6 +474,13 @@
     gap: 0.5rem;
   }
   .trust-item svg { width: 16px; height: 16px; color: var(--warm); }
+  /* The fee-qualified gifts line is the bar's longest item. It wraps onto two
+     balanced lines, and on wide screens it is capped near the old one-line
+     width so all four items still fit on one row. */
+  .trust-item--wrap span { text-wrap: balance; }
+  @media (min-width: 1180px) {
+    .trust-item--wrap span { max-width: 16em; }
+  }
 
   /* Section shared */
   section.block {
@@ -1654,7 +1661,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       <span><strong>501(c)(3) status</strong> pending</span>
     </div>
-    <div class="trust-item">
+    <div class="trust-item trust-item--wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
       <span><strong>100%</strong> of gifts, after processing fees, go to materials + labor</span>
     </div>
@@ -1919,7 +1926,7 @@
         <div class="donate-card-head">
           <span class="donate-card-eyebrow">Fund a project</span>
           <h3 class="donate-card-title">One-time gift</h3>
-          <p class="donate-card-desc">A single gift goes directly to materials and labor on the next roof scheduled by our partner network.</p>
+          <p class="donate-card-desc">A single gift, after payment processing fees, goes to materials and labor on the next roof scheduled by our partner network.</p>
         </div>
         <div class="donate-chips" role="group" aria-label="One-time donation amount">
           <label class="donate-chip">
