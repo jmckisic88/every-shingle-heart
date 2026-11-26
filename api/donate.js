@@ -22,7 +22,19 @@ import Stripe from 'stripe';
 
 const LIMITS = { onetime: { min: 5, max: 10000 }, monthly: { min: 5, max: 1000 } }; // whole dollars
 const PRODUCTS = { onetime: 'esh_gift_once', monthly: 'esh_gift_monthly', fees: 'esh_fee_cover' };
-const FEE = { onetime: 0.033, monthly: 0.036, fixedCents: 30 };
+// "Cover processing fees" estimate from Stripe's US prices: cards cost 2.9% + 30 cents,
+// plus 0.4% for the receipt invoice on one-time gifts (capped at $2, which a total
+// above $500 reaches) or 0.7% for Stripe Billing on monthly gifts. index.html shows
+// the same estimate. Bank (ACH) payments cost less; cards issued outside the US cost
+// 1.5% more, so for those the estimate falls a little short.
+const FEE = {
+  onetime: 0.033,
+  monthly: 0.036,
+  card: 0.029,
+  fixedCents: 30,
+  invoiceCapCents: 200,
+  invoiceCapFromCents: 50000,
+};
 // Card charges at or above this total (gift plus any fee cover) ask the donor's
 // bank to authenticate the card with 3D Secure. The bank may approve silently or
 // ask the donor to confirm; once authenticated, a fraud chargeback falls on the
@@ -35,16 +47,17 @@ const SESSION_ID = /^cs_(test|live)_[A-Za-z0-9]{10,}$/;
 const SITE_ORIGINS = ['https://www.everyshingleheart.com', 'https://everyshingleheart.com'];
 const LOCAL_HOSTNAMES = ['localhost', '127.0.0.1', '[::1]'];
 
-// PLACEHOLDER: [City] (principal office city) and [pending] (FDACS registration
-// number) must be replaced before go-live, together with the same text in
-// index.html and thank-you.html. The legal name is also a default until confirmed.
+// PLACEHOLDER: [pending] (the FDACS registration number, which starts with CH)
+// must be replaced before go-live, together with the same text in index.html
+// and thank-you.html. Florida asks for the state of the principal place of
+// business (s. 496.411(2)(a)), not the city.
 const SUBMIT_TEXT =
   'By completing this gift, you confirm you are not a foreign source of concern as defined in ' +
-  'section 496.404, Florida Statutes. Every Shingle Heart Foundation, [City], Florida. ' +
-  'Florida registration no. [pending]. A COPY OF THE OFFICIAL REGISTRATION AND FINANCIAL ' +
-  'INFORMATION MAY BE OBTAINED FROM THE DIVISION OF CONSUMER SERVICES BY CALLING TOLL-FREE ' +
-  'WITHIN THE STATE. REGISTRATION DOES NOT IMPLY ENDORSEMENT, APPROVAL, OR RECOMMENDATION BY ' +
-  'THE STATE. 1-800-HELP-FLA (435-7352), FDACS.gov.';
+  'section 496.404, Florida Statutes. Every Shingle Heart Foundation Inc. has its principal ' +
+  'place of business in Florida. Florida registration no. [pending]. A COPY OF THE OFFICIAL ' +
+  'REGISTRATION AND FINANCIAL INFORMATION MAY BE OBTAINED FROM THE DIVISION OF CONSUMER ' +
+  'SERVICES BY CALLING TOLL-FREE WITHIN THE STATE. REGISTRATION DOES NOT IMPLY ENDORSEMENT, ' +
+  'APPROVAL, OR RECOMMENDATION BY THE STATE. 1-800-HELP-FLA (435-7352), FDACS.gov.';
 
 function json(status, body) {
   return new Response(JSON.stringify(body), {
@@ -121,6 +134,17 @@ async function readBody(request) {
     chunks.push(value);
   }
   return new TextDecoder().decode(Buffer.concat(chunks));
+}
+
+// The smallest whole-cent amount that, added to the gift, still leaves the full
+// gift after the estimated fees.
+function feeCoverCents(giftCents, frequency) {
+  const total = Math.ceil((giftCents + FEE.fixedCents) / (1 - FEE[frequency]));
+  if (frequency === 'onetime' && total > FEE.invoiceCapFromCents) {
+    const capped = Math.ceil((giftCents + FEE.fixedCents + FEE.invoiceCapCents) / (1 - FEE.card));
+    return capped - giftCents;
+  }
+  return total - giftCents;
 }
 
 function lineItem(product, unitAmount, monthly) {
@@ -225,8 +249,7 @@ export async function POST(request) {
   }
 
   const giftCents = amount * 100;
-  const rate = FEE[frequency];
-  const feeCents = coverFees ? Math.ceil((giftCents + FEE.fixedCents) / (1 - rate)) - giftCents : 0;
+  const feeCents = coverFees ? feeCoverCents(giftCents, frequency) : 0;
 
   const stripe = new Stripe(key);
   try {

@@ -1958,9 +1958,9 @@
     </div>
 
     <!-- PLACEHOLDER: the IRS status sentence is default wording until the filing status is confirmed. -->
-    <p class="donate-note">Gifts are processed securely by Stripe, and Stripe emails a receipt for every gift. Every Shingle Heart Foundation has not yet received an IRS determination of 501(c)(3) status, so we can't yet confirm that gifts are tax-deductible. Please consult your tax advisor. Already give monthly? <a href="/api/donate?manage=1">Manage or cancel your gift.</a></p>
-    <!-- PLACEHOLDER: [City] is the principal office city and [pending] is the FDACS registration number. Replace both before go-live (same text in thank-you.html and api/donate.js). -->
-    <p class="donate-disclosure">Every Shingle Heart Foundation, [City], Florida. Florida registration no. [pending]. A COPY OF THE OFFICIAL REGISTRATION AND FINANCIAL INFORMATION MAY BE OBTAINED FROM THE DIVISION OF CONSUMER SERVICES BY CALLING TOLL-FREE WITHIN THE STATE. REGISTRATION DOES NOT IMPLY ENDORSEMENT, APPROVAL, OR RECOMMENDATION BY THE STATE. <a href="tel:+18004357352">1-800-HELP-FLA (435-7352)</a> &middot; <a href="https://www.fdacs.gov">FDACS.gov</a></p>
+    <p class="donate-note">Gifts are processed securely by Stripe, and Stripe emails a receipt for every gift. Every Shingle Heart Foundation Inc. has not yet received an IRS determination of 501(c)(3) status, so we can't yet confirm that gifts are tax-deductible. Please consult your tax advisor. Already give monthly? <a href="/api/donate?manage=1">Manage or cancel your gift.</a></p>
+    <!-- PLACEHOLDER: [pending] is the FDACS registration number (it starts with CH). Replace it before go-live (same text in thank-you.html and api/donate.js). Florida asks for the state of the principal place of business, not the city. -->
+    <p class="donate-disclosure">Every Shingle Heart Foundation Inc. has its principal place of business in Florida. Florida registration no. [pending]. A COPY OF THE OFFICIAL REGISTRATION AND FINANCIAL INFORMATION MAY BE OBTAINED FROM THE DIVISION OF CONSUMER SERVICES BY CALLING TOLL-FREE WITHIN THE STATE. REGISTRATION DOES NOT IMPLY ENDORSEMENT, APPROVAL, OR RECOMMENDATION BY THE STATE. <a href="tel:+18004357352">1-800-HELP-FLA (435-7352)</a> &middot; <a href="https://www.fdacs.gov">FDACS.gov</a></p>
   </div>
 </section>
 
@@ -2012,7 +2012,7 @@
       </div>
     </div>
     <div class="foot-bottom">
-      <div class="foot-legal">© 2026 Every Shingle Heart Foundation. All rights reserved. The Foundation's 501(c)(3) determination is pending. EIN and full financial disclosures will appear here once the determination letter is issued.</div>
+      <div class="foot-legal">© 2026 Every Shingle Heart Foundation Inc. All rights reserved. The Foundation's 501(c)(3) determination is pending. EIN and full financial disclosures will appear here once the determination letter is issued.</div>
       <div>everyshingleheart.com</div>
     </div>
   </div>
@@ -2153,13 +2153,16 @@
   })();
 
   // Donate cards: custom amounts, fee estimates and the Stripe Checkout handoff.
-  // LIMITS and FEE_RATE mirror api/donate.js, which re-validates every request.
+  // LIMITS and the fee constants mirror api/donate.js, which re-validates every request.
   // Money is formatted with Intl.NumberFormat only, never concatenated from a
   // currency-sign string literal (see commit 40cd703).
   (function() {
     var LIMITS = { onetime: { min: 5, max: 10000 }, monthly: { min: 5, max: 1000 } };  // whole dollars
     var FEE_RATE = { onetime: 0.033, monthly: 0.036 };
     var FEE_FIXED_CENTS = 30;
+    var CARD_RATE = 0.029;
+    var INVOICE_CAP_CENTS = 200;
+    var INVOICE_CAP_FROM_CENTS = 50000;
     var CONTACT = 'hello@everyshingleheart.com';
     var BUSY_LABEL = 'Opening secure checkout…';
     var REQUEST_TIMEOUT_MS = 20000;
@@ -2183,9 +2186,15 @@
       return n >= lim.min && n <= lim.max ? n : null;
     }
 
-    // Same estimate as the server: ceil((gift + 30 cents) / (1 - rate)) - gift.
+    // Same estimate as the server (feeCoverCents in api/donate.js): card 2.9% + 30 cents,
+    // plus the receipt invoice on one-time gifts (0.4%, capped at $2) or Stripe Billing
+    // on monthly gifts (0.7%).
     function feeCents(giftCents, type) {
-      return Math.ceil((giftCents + FEE_FIXED_CENTS) / (1 - FEE_RATE[type])) - giftCents;
+      var total = Math.ceil((giftCents + FEE_FIXED_CENTS) / (1 - FEE_RATE[type]));
+      if (type === 'onetime' && total > INVOICE_CAP_FROM_CENTS) {
+        total = Math.ceil((giftCents + FEE_FIXED_CENTS + INVOICE_CAP_CENTS) / (1 - CARD_RATE));
+      }
+      return total - giftCents;
     }
 
     function selectedAmount(form) {
