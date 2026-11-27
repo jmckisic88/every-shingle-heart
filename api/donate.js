@@ -47,17 +47,17 @@ const SESSION_ID = /^cs_(test|live)_[A-Za-z0-9]{10,}$/;
 const SITE_ORIGINS = ['https://www.everyshingleheart.com', 'https://everyshingleheart.com'];
 const LOCAL_HOSTNAMES = ['localhost', '127.0.0.1', '[::1]'];
 
-// PLACEHOLDER: [pending] (the FDACS registration number, which starts with CH)
-// must be replaced before go-live, together with the same text in index.html
-// and thank-you.html. Florida asks for the state of the principal place of
-// business (s. 496.411(2)(a)), not the city.
+// PLACEHOLDER: when FDACS approves the registration, add "Florida registration no.
+// CH_____." after the first sentence about the foundation, together with the same
+// text in index.html and thank-you.html. Florida asks for the state of the principal
+// place of business (s. 496.411(2)(a)), not the city.
 const SUBMIT_TEXT =
   'By completing this gift, you confirm you are not a foreign source of concern as defined in ' +
   'section 496.404, Florida Statutes. Every Shingle Heart Foundation Inc. has its principal ' +
-  'place of business in Florida. Florida registration no. [pending]. A COPY OF THE OFFICIAL ' +
-  'REGISTRATION AND FINANCIAL INFORMATION MAY BE OBTAINED FROM THE DIVISION OF CONSUMER ' +
-  'SERVICES BY CALLING TOLL-FREE WITHIN THE STATE. REGISTRATION DOES NOT IMPLY ENDORSEMENT, ' +
-  'APPROVAL, OR RECOMMENDATION BY THE STATE. 1-800-HELP-FLA (435-7352), FDACS.gov.';
+  'place of business in Florida. A COPY OF THE OFFICIAL REGISTRATION AND FINANCIAL ' +
+  'INFORMATION MAY BE OBTAINED FROM THE DIVISION OF CONSUMER SERVICES BY CALLING TOLL-FREE ' +
+  'WITHIN THE STATE. REGISTRATION DOES NOT IMPLY ENDORSEMENT, APPROVAL, OR RECOMMENDATION BY ' +
+  'THE STATE. 1-800-HELP-FLA (435-7352), FDACS.gov.';
 
 function json(status, body) {
   return new Response(JSON.stringify(body), {

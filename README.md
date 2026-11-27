@@ -103,7 +103,7 @@ US bank account: the Stripe test bank, or routing `110000000` with account `0001
 
 ### Placeholders
 
-The Florida disclosure carries `[pending]` (the FDACS registration number, which starts with CH), and the IRS status sentence is default wording. Florida asks for the state of the principal place of business (s. 496.411(2)(a)), so the disclosure names Florida, not a city. All are tagged in code:
+The Florida disclosure leaves out the FDACS registration number until FDACS approves the registration and issues it (it starts with CH); then add "Florida registration no. CH_____." in all three places. The IRS status sentence is default wording. Florida asks for the state of the principal place of business (s. 496.411(2)(a)), so the disclosure names Florida, not a city. All are tagged in code:
 
 ```bash
 grep -rn PLACEHOLDER index.html thank-you.html api/donate.js
@@ -132,7 +132,7 @@ Items marked ⚠️ block public promotion of the domain or live payments.
 
 - [ ] ⚠️ **Florida charity registration.** File FDACS-10100 (plus the FDACS-10124 attestation) in the Division of Consumer Services Licensing Portal at consumercompliance.fdacs.gov. The fee is $10 when the prior fiscal year brought in under $5,000. The form certifies a conflict-of-interest policy, so the board adopts one first. FDACS has 15 business days to approve, and a charity that must register may not solicit until FDACS approves (s. 496.405(1)(c)). The approval comes with a CH registration number.
 - [ ] ⚠️ **Counsel or CPA sign-off** on the donate copy, the Checkout text, the thank-you page, the receipt memo and footer, and the deductibility wording.
-- [ ] ⚠️ **Placeholders replaced** (FDACS number, IRS status sentence). `grep -rn PLACEHOLDER index.html thank-you.html api/donate.js` prints nothing, and the live invoice memo in Stripe matches the site.
+- [ ] ⚠️ **Placeholders replaced** (FDACS registration number once issued, IRS status sentence). `grep -rn PLACEHOLDER index.html thank-you.html api/donate.js` prints nothing, and the live invoice memo in Stripe matches the site.
 - [ ] ⚠️ **Live Stripe account** activated under ESH's own EIN and bank account (never Happy Roof's), legal name `Every Shingle Heart Foundation Inc.` exactly as on the IRS EIN record, industry MCC 8398, 2FA on, least-privilege roles. Stripe reserves the "Nonprofit organization" business type for IRS-recognized 501(c)(3) organizations, so before the IRS letter arrives, confirm the business type with Stripe support. Public details: legal name, support email, support URL and privacy policy URL. Statement descriptor `EVERY SHINGLE HEART`. Donation disclosure OFF until the IRS letter arrives (it states 501(c)(3) status).
 - [ ] ⚠️ **Live Dashboard settings** (sandbox settings don't carry over): payment methods (card, Apple Pay, Google Pay, Link, US bank account ON; Affirm, Klarna, Cash App Pay, Amazon Pay OFF), invoice default memo and footer (the footer carries the Florida statement and CH number, which s. 496.411 requires on receipts), Successful payments and Refunds emails, Smart Retries and billing emails, and branding.
 - [x] **Live key** (2026-11-27): an account administrator created the restricted live key "everyshingleheart.com" in the Dashboard (Stripe offers no API for creating keys, and a live key is shown only once) with Checkout Sessions, Products and Customer portal at Write.
