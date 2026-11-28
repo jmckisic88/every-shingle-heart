@@ -53,7 +53,7 @@ const LOCAL_HOSTNAMES = ['localhost', '127.0.0.1', '[::1]'];
 // place of business (s. 496.411(2)(a)), not the city.
 const SUBMIT_TEXT =
   'By completing this gift, you confirm you are not a foreign source of concern as defined in ' +
-  'section 496.404, Florida Statutes. Every Shingle Heart Foundation Inc. has its principal ' +
+  'section 496.404, Florida Statutes. Every Shingle Heart Inc has its principal ' +
   'place of business in Florida. A COPY OF THE OFFICIAL REGISTRATION AND FINANCIAL ' +
   'INFORMATION MAY BE OBTAINED FROM THE DIVISION OF CONSUMER SERVICES BY CALLING TOLL-FREE ' +
   'WITHIN THE STATE. REGISTRATION DOES NOT IMPLY ENDORSEMENT, APPROVAL, OR RECOMMENDATION BY ' +
